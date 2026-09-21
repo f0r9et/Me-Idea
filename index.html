@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>人物企劃</title>
+<style>
+:root{
+  --bg:#eef1f4;--panel:#ffffff;--ink:#1d2733;--mute:#5d6b7a;--line:#cfd7df;--accent:#2b6a8a;--chip:#dcebf3;--ph:#fff3c4;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#141a21;--panel:#1b232c;--ink:#e6ebf0;--mute:#93a1b0;--line:#2c3844;--accent:#6fb3d2;--chip:#22384a;--ph:#4a4020}
+}
+:root[data-theme="dark"]{--bg:#141a21;--panel:#1b232c;--ink:#e6ebf0;--mute:#93a1b0;--line:#2c3844;--accent:#6fb3d2;--chip:#22384a;--ph:#4a4020}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 system-ui,-apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+main{max-width:40rem;margin:0 auto;padding:2.5rem 1.25rem 4rem}
+h1{font-size:2rem;line-height:1.3;margin:0 0 .75rem;letter-spacing:.02em}
+h2{font-size:1.15rem;margin:2.75rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--accent)}
+h3{font-size:1.05rem;margin:0}
+p{margin:.5rem 0}
+.lead{font-size:1.1rem;color:var(--ink)}
+.mute{color:var(--mute);font-size:.9rem}
+.ph{background:var(--ph);border-bottom:1px dashed var(--mute);padding:0 .2em}
+.need{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:1rem 1.1rem;margin:1rem 0}
+.need header{display:flex;justify-content:space-between;align-items:center;gap:.75rem;margin-bottom:.5rem}
+.chip{font-size:.8rem;background:var(--chip);color:var(--accent);padding:.1rem .6rem;border-radius:999px;white-space:nowrap}
+dl{margin:0}
+dt{font-weight:600;margin-top:.6rem;font-size:.9rem;color:var(--mute)}
+dd{margin:.1rem 0 0}
+ol{padding-left:1.25rem;margin:.5rem 0}
+li{margin:.25rem 0}
+.empty{background:var(--panel);border:1px dashed var(--line);border-radius:6px;padding:1rem 1.1rem;color:var(--mute)}
+.demo{margin-top:1.25rem}
+.demo summary{cursor:pointer;color:var(--accent)}
+.tools{display:flex;gap:.5rem;margin:.75rem 0}
+.tools button{font:inherit;font-size:.9rem;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:.2rem .9rem;cursor:pointer}
+.tools button[aria-pressed="true"]{background:var(--chip);border-color:var(--accent);color:var(--accent)}
+.need.t0{box-shadow:0 0 0 2px var(--chip)}
+.need.t0 h3{font-size:1.2rem}
+.need.t2{opacity:.65;border-left-color:var(--line)}
+</style>
+</head>
+<body>
+<main>
+  <h1>人物企劃</h1>
+  <p class="lead">這是一個把我的現實狀態公開的企劃。看完下面的需求，如果你的能力、時間或資源剛好派得上用場，告訴我。事情之後怎麼發展，會記錄在這一頁。</p>
+
+  <h2>我是誰</h2>
+  <p id="who"></p>
+
+  <h2>現在狀態</h2>
+  <p id="status"></p>
+  <p class="mute">最後更新：<span id="updated"></span></p>
+
+  <h2>目前的需求</h2>
+  <div id="needs"></div>
+
+  <h2>怎麼參與</h2>
+  <ol>
+    <li>選一個上面的需求。</li>
+    <li>告訴我你能提供什麼：技能、時間、經驗或資源，多小都可以。</li>
+    <li>我回覆你，並把結果記錄在下面。</li>
+  </ol>
+  <p>聯絡方式：<span id="contact"></span></p>
+
+  <h2>已發生的結果</h2>
+  <div id="results"></div>
+  <details class="demo">
+    <summary>示範：不同協助在這裡會怎麼呈現（非真實紀錄）</summary>
+    <p class="mute">規則：真實紀錄只會出現「成果」和「進行中」。「沒對上」只用在示範，一律匿名，意思是需求還沒被滿足，不是在評價幫忙的人。</p>
+    <div class="tools"><button data-f="all" aria-pressed="true">全部</button><button data-f="win" aria-pressed="false">只看有成果的</button></div>
+    <div id="demos"></div>
+  </details>
+</main>
+
+<script>
+/* ===== 只改這一塊。頁面其餘部分會自動依資料排版 ===== */
+const DATA = {
+  who: "我是 F0r9eT，大學生。我把自己目前的狀態和卡關的地方公開，讓陌生人有機會用自己的能力幫上忙。",
+  status: "這週在做：把這個企劃的入口頁做出來。卡在：不確定公開文字該怎麼寫。",
+  updated: "2026-09-21",
+  contact: "",  // 填 Discord 邀請連結、表單網址(https://...) 或 mailto:你的信箱
+
+  // 每個需求三格：卡在哪(stuck) / 誰能幫(helpers) / 完成後(done)。state 用「開放中」「進行中」「已完成」
+  needs: [
+    {
+      title: "個人推銷工具", state: "開放中",
+      stuck: "我對這個工具的想法很具體，但不知道用什麼載體實現。我也怕做到一半額度用完、或自己懈怠而放棄。",
+      helpers: "做互動網頁的人、懂資料庫的人、有專案經驗的工程師、能評估個人行銷專案的人、有空能監督進展的人。",
+      done: "入口頁上線，而且每週至少有一次可見的進展。"
+    },
+    {
+      title: "進度監督", state: "開放中",
+      stuck: "專案卡住時，我分不清是方向該改，還是我在焦慮或逃避。",
+      helpers: "有空聊的人、有類似經驗的人、能看出我在逃避的人。",
+      done: "我清楚時間怎麼分配，知道哪些想法該改，更容易向人求助。"
+    },
+    {
+      title: "開發備援", state: "開放中",
+      stuck: "我用 AI 做東西，怕額度中途用完，進度就斷了。",
+      helpers: "有替代工具或省額度做法的人、有專案經驗的工程師、願意提供額度的人。",
+      done: "額度用完時我有備案，專案不會中斷。"
+    }
+  ],
+
+  // 結果：每筆 { need:"對應需求", who:"誰幫的", what:"做了什麼", after:"之後怎麼改變" }
+  results: [],
+
+  // 示範資料（非真實紀錄）。tier 只能是 成果 / 進行中 / 沒對上
+  demos: [
+    { need: "開發備援", tier: "成果", who: "Claude（示範）", what: "把頁面做成你自己也能改的形狀。", after: "額度用完後，專案仍能繼續。" },
+    { need: "進度監督", tier: "進行中", who: "路人甲（示範）", what: "答應每週看一次進度。", after: "等待第一次回報。" },
+    { need: "個人推銷工具", tier: "沒對上", who: "某 AI（諷刺範例）", what: "「很抱歉，作為一名大語言模型，我無法提供該方面的協助。」", after: "沒有變化，需求仍開放中。" }
+  ]
+};
+/* ===== 以下是排版程式，不用動 ===== */
+const $ = id => document.getElementById(id);
+const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; };
+function card(title, chip, rows) {
+  const a = el('article', 'need'), h = el('header');
+  h.append(el('h3', '', title));
+  if (chip) h.append(el('span', 'chip', chip));
+  a.append(h);
+  const dl = el('dl');
+  rows.forEach(([k, v]) => { dl.append(el('dt', '', k), el('dd', '', v)); });
+  a.append(dl);
+  return a;
+}
+$('who').textContent = DATA.who;
+$('status').textContent = DATA.status;
+$('updated').textContent = DATA.updated;
+DATA.needs.forEach(n => $('needs').append(card(n.title, n.state, [['卡在哪', n.stuck], ['誰能幫', n.helpers], ['完成後', n.done]])));
+const c = DATA.contact.trim();
+if (!c) { $('contact').append(el('span', 'ph', '尚未設定')); }
+else if (/^(https?:\/\/|mailto:)/.test(c)) { const a = el('a', '', c.replace(/^mailto:/, '')); a.href = c; $('contact').append(a); }
+else { $('contact').textContent = c; }
+if (DATA.results.length === 0) { $('results').append(el('div', 'empty', '目前還沒有結果。第一個結果出現時會放在這裡，包含誰幫了什麼、之後怎麼改變。')); }
+else { DATA.results.forEach(r => $('results').append(card(r.need, '', [['誰幫的', r.who], ['做了什麼', r.what], ['之後怎麼改變', r.after]]))); }
+const TIER = { '成果': 0, '進行中': 1, '沒對上': 2 };
+let filt = 'all';
+function renderDemos() {
+  const box = $('demos'); box.replaceChildren();
+  DATA.demos.filter(d => filt === 'all' || d.tier === '成果')
+    .sort((a, b) => TIER[a.tier] - TIER[b.tier])
+    .forEach(d => {
+      const a = card(d.need, d.tier, [['誰幫的', d.tier === '沒對上' ? '匿名' : d.who], ['做了什麼', d.what], ['之後怎麼改變', d.after]]);
+      a.classList.add('t' + TIER[d.tier]); box.append(a);
+    });
+}
+document.querySelectorAll('.tools button').forEach(b => b.addEventListener('click', () => {
+  filt = b.dataset.f;
+  document.querySelectorAll('.tools button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  renderDemos();
+}));
+renderDemos();
+</script>
+</body>
+</html>
