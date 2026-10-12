@@ -75,5 +75,12 @@ function mount(root) {
   }));
   renderDemos();
 }
-Shell.register({ id: 'profile', title: '人物企劃', mount });
+const KEYS = ['who', 'status', 'updated', 'contact', 'needs', 'results'];
+function getData() { const o = {}; KEYS.forEach(k => o[k] = DATA[k]); return o; }
+function setData(o) {
+  if (!o || typeof o !== 'object') throw new Error('資料格式不對');
+  KEYS.forEach(k => { if (k in o && typeof o[k] === typeof DATA[k] && Array.isArray(o[k]) === Array.isArray(DATA[k])) DATA[k] = o[k]; });
+  Shell.show('profile');
+}
+Shell.register({ id: 'profile', title: '人物企劃', mount, getData, setData });
 })();

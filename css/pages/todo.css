@@ -1,0 +1,13 @@
+.todo-form{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1.25rem}
+.todo-form input,.todo-form select{font:inherit;font-size:.9rem;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.35rem .6rem}
+.todo-form input:not([type=checkbox]):first-child{flex:1 1 100%}
+.todo-form input[type=number]{width:7rem}
+.todo-form button,.todo-btns button{font:inherit;font-size:.85rem;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:.2rem .8rem;cursor:pointer}
+.todo-list{display:flex;flex-direction:column;gap:.5rem}
+.todo-closed{margin-top:1.5rem}
+.todo-row{display:flex;gap:.75rem;justify-content:space-between;align-items:center;padding:.6rem .8rem;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.todo-main{display:flex;flex-direction:column;min-width:0}
+.todo-title{overflow-wrap:anywhere}
+.todo-meta{font-size:.8rem;color:var(--mute)}
+.todo-btns{display:flex;gap:.35rem;flex-shrink:0}
+.todo-row.off .todo-title{text-decoration:line-through;color:var(--mute)}

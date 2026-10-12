@@ -7,6 +7,7 @@ const Shell = (function () {
     const view = document.getElementById('view');
     view.replaceChildren();
     p.mount(view);
+    if (p.getData && p.setData) IO.attach(p, view);
     document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.id === id)));
     try { history.replaceState(null, '', '#' + id); } catch (e) {} // file:// 下可能被擋，不影響功能
   }
@@ -23,5 +24,5 @@ const Shell = (function () {
     show(pages.some(p => p.id === want) ? want : pages[0].id);
     document.getElementById('loading').classList.add('done');
   }
-  return { register, start };
+  return { register, start, show };
 })();
